@@ -7,7 +7,7 @@ var _extend = require('lodash/extend');
 var _transform = require('lodash/transform');
 var Inflector = require('./inflector');
 
-module.exports = function (jsonapi, data, opts) {
+module.exports = function(jsonapi, data, opts) {
   var alreadyIncluded = [];
 
   function isComplexType(obj) {
@@ -26,7 +26,7 @@ module.exports = function (jsonapi, data, opts) {
   }
 
   function findIncluded(relationshipData, ancestry) {
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
       if (!jsonapi.included || !relationshipData) { resolve(null); }
 
       var included = _find(jsonapi.included, {
@@ -40,7 +40,7 @@ module.exports = function (jsonapi, data, opts) {
         if (ancestry.indexOf(included.type) > -1) {
           return Promise
             .all([extractAttributes(included)])
-            .then(function (results) {
+            .then(function(results) {
               var attributes = results[0];
               var relationships = results[1];
               resolve(_extend(attributes, relationships));
@@ -49,7 +49,7 @@ module.exports = function (jsonapi, data, opts) {
 
         return Promise
           .all([extractAttributes(included), extractRelationships(included, ancestry + ':' + included.type + included.id)])
-          .then(function (results) {
+          .then(function(results) {
             var attributes = results[0];
             var relationships = results[1];
             resolve(_extend(attributes, relationships));
@@ -62,7 +62,7 @@ module.exports = function (jsonapi, data, opts) {
 
   function keyForAttribute(attribute) {
     if (isPlainObject(attribute)) {
-      return _transform(attribute, function (result, value, key) {
+      return _transform(attribute, function(result, value, key) {
         if (isComplexType(value)) {
           result[keyForAttribute(key)] = keyForAttribute(value);
         } else {
@@ -70,7 +70,7 @@ module.exports = function (jsonapi, data, opts) {
         }
       });
     } else if (Array.isArray(attribute)) {
-      return attribute.map(function (attr) {
+      return attribute.map(function(attr) {
         if (isComplexType(attr)) {
           return keyForAttribute(attr);
         } else {
@@ -104,22 +104,22 @@ module.exports = function (jsonapi, data, opts) {
     var dest = {};
 
     return Promise
-      .all(Object.keys(from.relationships).map(function (key) {
+      .all(Object.keys(from.relationships).map(function(key) {
         var relationship = from.relationships[key];
 
         if (relationship.data === null) {
           dest[keyForAttribute(key)] = null;
         } else if (Array.isArray(relationship.data)) {
           return Promise
-            .all(relationship.data.map(function (relationshipData) {
+            .all(relationship.data.map(function(relationshipData) {
               return extractIncludes(relationshipData, ancestry);
             }))
-            .then(function (includes) {
+            .then(function(includes) {
               if (includes) { dest[keyForAttribute(key)] = includes; }
             });
         } else {
           return extractIncludes(relationship.data, ancestry)
-            .then(function (includes) {
+            .then(function(includes) {
               if (includes) { dest[keyForAttribute(key)] = includes; }
             });
         }
@@ -131,12 +131,12 @@ module.exports = function (jsonapi, data, opts) {
 
   function extractIncludes(relationshipData, ancestry) {
     return findIncluded(relationshipData, ancestry)
-      .then(function (included) {
+      .then(function(included) {
         var valueForRelationship = getValueForRelationship(relationshipData,
           included);
 
         if (valueForRelationship && isFunction(valueForRelationship.then)) {
-          return valueForRelationship.then(function (value) {
+          return valueForRelationship.then(function(value) {
             return value;
           });
         } else {
@@ -145,16 +145,16 @@ module.exports = function (jsonapi, data, opts) {
       });
   }
 
-  this.perform = function () {
+  this.perform = function() {
     return Promise
       .all([extractAttributes(data), extractRelationships(data, data.type + data.id)])
-      .then(function (results) {
+      .then(function(results) {
         var attributes = results[0];
         var relationships = results[1];
         var record = _extend(attributes, relationships);
 
         // Links
-        if (jsonapi.links) {
+        if (opts && opts.links !== false && jsonapi.links) {
           record.links = jsonapi.links;
         }
 

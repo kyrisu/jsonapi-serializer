@@ -6,9 +6,9 @@ var _ = require('lodash');
 
 var JSONAPIDeserializer = require('../lib/deserializer');
 
-describe('JSON API Deserializer', function () {
-  describe('simple JSONAPI array document', function () {
-    it('should returns attributes', function (done) {
+describe('JSON API Deserializer', function() {
+  describe('simple JSONAPI array document', function() {
+    it('should returns attributes', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -22,7 +22,7 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer()
-        .deserialize(dataSet, function (err, json) {
+        .deserialize(dataSet, function(err, json) {
           expect(json).to.be.an('array').with.length(2);
           expect(json[0]).to.be.eql({
             id: '54735750e16638ba1eee59cb',
@@ -40,8 +40,8 @@ describe('JSON API Deserializer', function () {
     });
   });
 
-  describe('simple JSONAPI single document', function () {
-    it('should returns attributes', function (done) {
+  describe('simple JSONAPI single document', function() {
+    it('should returns attributes', function(done) {
       var dataSet = {
         data: {
           type: 'users',
@@ -51,7 +51,7 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer()
-        .deserialize(dataSet, function (err, json) {
+        .deserialize(dataSet, function(err, json) {
           expect(json).to.be.eql({
             id: '54735750e16638ba1eee59cb',
             'first-name': 'Sandro',
@@ -62,7 +62,7 @@ describe('JSON API Deserializer', function () {
         });
     });
 
-    it('should return camelCase attributes', function (done) {
+    it('should return camelCase attributes', function(done) {
       var dataSet = {
         data: {
           type: 'users',
@@ -73,7 +73,7 @@ describe('JSON API Deserializer', function () {
 
       new JSONAPIDeserializer({
         keyForAttribute: 'camelCase'
-      }).deserialize(dataSet, function (err, json) {
+      }).deserialize(dataSet, function(err, json) {
         expect(json).to.be.eql({
           id: '54735750e16638ba1eee59cb',
           firstName: 'Sandro',
@@ -85,8 +85,8 @@ describe('JSON API Deserializer', function () {
     });
   });
 
-  describe('Nested documents', function () {
-    it('should returns attributes', function (done) {
+  describe('Nested documents', function() {
+    it('should returns attributes', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -120,7 +120,7 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer({ keyForAttribute: 'camelCase' })
-        .deserialize(dataSet, function (err, json) {
+        .deserialize(dataSet, function(err, json) {
           expect(json).to.be.an('array').with.length(2);
 
           expect(json[0]).to.have.key('id', 'firstName', 'lastName', 'books');
@@ -141,8 +141,8 @@ describe('JSON API Deserializer', function () {
     });
   });
 
-  describe('Compound document', function () {
-    it('should merge included relationships to attributes', function (done) {
+  describe('Compound document', function() {
+    it('should merge included relationships to attributes', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -189,34 +189,34 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer()
-      .deserialize(dataSet, function (err, json) {
-        expect(json).to.be.an('array').with.length(2);
+        .deserialize(dataSet, function(err, json) {
+          expect(json).to.be.an('array').with.length(2);
 
-        expect(json[0]).to.have.key('id', 'first-name', 'last-name',
-          'address');
+          expect(json[0]).to.have.key('id', 'first-name', 'last-name',
+            'address');
 
-        expect(json[0].address).to.be.eql({
-          id: '54735722e16620ba1eee36af',
-          'address-line1': '406 Madison Court',
-          'zip-code': '49426',
-          country: 'USA'
+          expect(json[0].address).to.be.eql({
+            id: '54735722e16620ba1eee36af',
+            'address-line1': '406 Madison Court',
+            'zip-code': '49426',
+            country: 'USA'
+          });
+
+          expect(json[1]).to.have.key('id', 'first-name', 'last-name',
+            'address');
+
+          expect(json[1].address).to.be.eql({
+            id: '54735697e16624ba1eee36bf',
+            'address-line1': '361 Shady Lane',
+            'zip-code': '23185',
+            country: 'USA'
+          });
+
+          done(null, json);
         });
-
-        expect(json[1]).to.have.key('id', 'first-name', 'last-name',
-          'address');
-
-        expect(json[1].address).to.be.eql({
-          id: '54735697e16624ba1eee36bf',
-          'address-line1': '361 Shady Lane',
-          'zip-code': '23185',
-          country: 'USA'
-        });
-
-        done(null, json);
-      });
     });
 
-    it('should convert relationship attributes to camelCase', function (done) {
+    it('should convert relationship attributes to camelCase', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -262,37 +262,37 @@ describe('JSON API Deserializer', function () {
         }]
       };
 
-      new JSONAPIDeserializer({keyForAttribute: 'camelCase'})
-      .deserialize(dataSet, function (err, json) {
-        expect(json).to.be.an('array').with.length(2);
+      new JSONAPIDeserializer({ keyForAttribute: 'camelCase' })
+        .deserialize(dataSet, function(err, json) {
+          expect(json).to.be.an('array').with.length(2);
 
-        expect(json[0]).to.have.key('id', 'firstName', 'lastName',
-          'myAddress');
+          expect(json[0]).to.have.key('id', 'firstName', 'lastName',
+            'myAddress');
 
-        expect(json[0].myAddress).to.be.eql({
-          id: '54735722e16620ba1eee36af',
-          addressLine1: '406 Madison Court',
-          zipCode: '49426',
-          country: 'USA'
+          expect(json[0].myAddress).to.be.eql({
+            id: '54735722e16620ba1eee36af',
+            addressLine1: '406 Madison Court',
+            zipCode: '49426',
+            country: 'USA'
+          });
+
+          expect(json[1]).to.have.key('id', 'firstName', 'lastName',
+            'myAddress');
+
+          expect(json[1].myAddress).to.be.eql({
+            id: '54735697e16624ba1eee36bf',
+            addressLine1: '361 Shady Lane',
+            zipCode: '23185',
+            country: 'USA'
+          });
+
+          done(null, json);
         });
-
-        expect(json[1]).to.have.key('id', 'firstName', 'lastName',
-          'myAddress');
-
-        expect(json[1].myAddress).to.be.eql({
-          id: '54735697e16624ba1eee36bf',
-          addressLine1: '361 Shady Lane',
-          zipCode: '23185',
-          country: 'USA'
-        });
-
-        done(null, json);
-      });
 
     });
 
-    describe('With multiple levels', function () {
-      it('should merge all include relationships to attributes', function (done) {
+    describe('With multiple levels', function() {
+      it('should merge all include relationships to attributes', function(done) {
         var dataSet = {
           data: [{
             type: 'users',
@@ -364,7 +364,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).to.be.an('array').with.length(2);
 
             expect(json[0]).to.have.key('id', 'first-name', 'last-name',
@@ -400,8 +400,8 @@ describe('JSON API Deserializer', function () {
       });
     });
 
-    describe('With polymorphic relationships to same records', function () {
-      it('should return all data without circular error', function (done) {
+    describe('With polymorphic relationships to same records', function() {
+      it('should return all data without circular error', function(done) {
         var imageOne = 'https://avatars2.githubusercontent.com/u/15112077?s=400&u=9860ca2648dd28ec2c726d287980b4f7d615f590&v=4';
         var imageTwo = 'https://www.placewise.com/images/employees/ashley-schauer.jpg';
         var dataSet = {
@@ -475,10 +475,10 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).to.be.an('object');
 
-            expect(json).to.have.key('id', 'first-name', 'last-name', 
+            expect(json).to.have.key('id', 'first-name', 'last-name',
               'username', 'images');
 
             expect(json.images).to.be.an('array').with.length(2)
@@ -490,7 +490,7 @@ describe('JSON API Deserializer', function () {
                 { name: 'jpeg', id: '1' },
                 { name: 'color', id: '2' },
                 { name: 'profile-pic', id: '3' }
-             ]
+              ]
             });
 
             expect(json.images[1]).to.be.eql({
@@ -508,8 +508,8 @@ describe('JSON API Deserializer', function () {
       });
     });
 
-    describe('With self-referencing relationships', function () {
-      it('should return all data without circular error', function (done) {
+    describe('With self-referencing relationships', function() {
+      it('should return all data without circular error', function(done) {
         var dataSet = {
           data: {
             id: '1',
@@ -553,7 +553,7 @@ describe('JSON API Deserializer', function () {
               id: '2',
               type: 'stores',
               attributes: {
-                name: 'Fashionable Clothes' 
+                name: 'Fashionable Clothes'
               },
               relationships: {
                 deals: {
@@ -612,14 +612,14 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).to.be.an('object');
 
             expect(json).to.be.be.eql({
               name: 'Twin Pines Mall',
               id: '1',
               stores: [
-                { 
+                {
                   name: 'Tasty Food',
                   id: '1',
                   deals: [
@@ -634,10 +634,10 @@ describe('JSON API Deserializer', function () {
                       id: '2',
                       stores: [
                         { name: 'Tasty Food', id: '1' }
-                      ] 
-                    } 
+                      ]
+                    }
                   ]
-                }, { 
+                }, {
                   name: 'Fashionable Clothes',
                   id: '2',
                   deals: [
@@ -649,10 +649,10 @@ describe('JSON API Deserializer', function () {
                       ]
                     }
                   ]
-                }, { 
+                }, {
                   name: 'Readable Books',
                   id: '3'
-                } 
+                }
               ],
               deals: [
                 {
@@ -696,7 +696,7 @@ describe('JSON API Deserializer', function () {
                     }
                   ]
                 }
-              ] 
+              ]
             });
 
             done(null, json);
@@ -704,8 +704,8 @@ describe('JSON API Deserializer', function () {
       });
     });
 
-    describe('With relationships data array', function () {
-      it('should merge included relationships to attributes', function (done) {
+    describe('With relationships data array', function() {
+      it('should merge included relationships to attributes', function(done) {
         var dataSet = {
           data: [{
             type: 'users',
@@ -769,7 +769,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).to.be.an('array').with.length(2);
 
             expect(json[0]).to.have.key('id', 'first-name', 'last-name',
@@ -800,7 +800,7 @@ describe('JSON API Deserializer', function () {
           });
       });
 
-      it('should merge included and reused relationships to attributes of shallow resources', function (done) {
+      it('should merge included and reused relationships to attributes of shallow resources', function(done) {
         var dataSet = {
           data: [{
             type: 'users',
@@ -876,7 +876,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).to.be.an('array').with.length(3);
 
             expect(json[0]).to.have.key('id', 'first-name', 'last-name',
@@ -921,7 +921,7 @@ describe('JSON API Deserializer', function () {
           });
       });
 
-      it('should merge included and reused relationships to attributes of nested resources', function (done) {
+      it('should merge included and reused relationships to attributes of nested resources', function(done) {
         var dataSet = {
           data: [{
             type: 'users',
@@ -995,7 +995,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).to.be.an('array').with.length(1);
 
             expect(json[0]).to.have.key('id', 'first-name', 'last-name',
@@ -1026,40 +1026,40 @@ describe('JSON API Deserializer', function () {
       });
     });
 
-    describe('Without included', function () {
+    describe('Without included', function() {
       var baseDataSet = {
-          data: [{
-            type: 'users',
-            id: '54735750e16638ba1eee59cb',
-            attributes: {
-              'first-name': 'Sandro',
-              'last-name': 'Munda'
-            },
-            relationships: {
-              address: {
-                data: { type: 'addresses', id: '54735722e16620ba1eee36af' }
-              }
+        data: [{
+          type: 'users',
+          id: '54735750e16638ba1eee59cb',
+          attributes: {
+            'first-name': 'Sandro',
+            'last-name': 'Munda'
+          },
+          relationships: {
+            address: {
+              data: { type: 'addresses', id: '54735722e16620ba1eee36af' }
             }
-          }, {
-            type: 'users',
-            id: '5490143e69e49d0c8f9fc6bc',
-            attributes: {
-              'first-name': 'Lawrence',
-              'last-name': 'Bennett'
-            },
-            relationships: {
-              address: {
-                data: { type: 'addresses', id: '54735697e16624ba1eee36bf' }
-              }
+          }
+        }, {
+          type: 'users',
+          id: '5490143e69e49d0c8f9fc6bc',
+          attributes: {
+            'first-name': 'Lawrence',
+            'last-name': 'Bennett'
+          },
+          relationships: {
+            address: {
+              data: { type: 'addresses', id: '54735697e16624ba1eee36bf' }
             }
-          }]
-        };
+          }
+        }]
+      };
 
-      it('should use the value of valueForRelationship opt', function (done) {
+      it('should use the value of valueForRelationship opt', function(done) {
         var dataSet = _.cloneDeep(baseDataSet);
         new JSONAPIDeserializer({
           addresses: {
-            valueForRelationship: function (relationship) {
+            valueForRelationship: function(relationship) {
               return {
                 id: relationship.id,
                 'address-line1': '406 Madison Court',
@@ -1069,37 +1069,37 @@ describe('JSON API Deserializer', function () {
             }
           }
         })
-        .deserialize(dataSet, function (err, json) {
-          expect(json).to.be.an('array').with.length(2);
+          .deserialize(dataSet, function(err, json) {
+            expect(json).to.be.an('array').with.length(2);
 
-          expect(json[0]).to.have.key('id', 'first-name', 'last-name',
-            'address');
+            expect(json[0]).to.have.key('id', 'first-name', 'last-name',
+              'address');
 
-          expect(json[0].address).to.be.eql({
-            id: '54735722e16620ba1eee36af',
-            'address-line1': '406 Madison Court',
-            'zip-code': '49426',
-            country: 'USA'
+            expect(json[0].address).to.be.eql({
+              id: '54735722e16620ba1eee36af',
+              'address-line1': '406 Madison Court',
+              'zip-code': '49426',
+              country: 'USA'
+            });
+
+            expect(json[1]).to.have.key('id', 'first-name', 'last-name',
+              'address');
+
+            expect(json[1].address).to.be.eql({
+              id: '54735697e16624ba1eee36bf',
+              'address-line1': '406 Madison Court',
+              'zip-code': '49426',
+              country: 'USA'
+            });
+
+            done(null, json);
           });
-
-          expect(json[1]).to.have.key('id', 'first-name', 'last-name',
-            'address');
-
-          expect(json[1].address).to.be.eql({
-            id: '54735697e16624ba1eee36bf',
-            'address-line1': '406 Madison Court',
-            'zip-code': '49426',
-            country: 'USA'
-          });
-
-          done(null, json);
-        });
       });
-      it('should use the value of a return promise from valueForRelationship opt', function (done) {
+      it('should use the value of a return promise from valueForRelationship opt', function(done) {
         var dataSet = _.cloneDeep(baseDataSet);
         new JSONAPIDeserializer({
           addresses: {
-            valueForRelationship: function (relationship) {
+            valueForRelationship: function(relationship) {
               return new Promise(function(resolve) {
                 setTimeout(function() {
                   resolve({
@@ -1110,30 +1110,30 @@ describe('JSON API Deserializer', function () {
             }
           }
         })
-        .deserialize(dataSet, function (err, json) {
-          expect(json).to.be.an('array').with.length(2);
+          .deserialize(dataSet, function(err, json) {
+            expect(json).to.be.an('array').with.length(2);
 
-          expect(json[0]).to.have.key('id', 'first-name', 'last-name',
-            'address');
+            expect(json[0]).to.have.key('id', 'first-name', 'last-name',
+              'address');
 
-          expect(json[0].address).to.be.eql({
-            id: '54735722e16620ba1eee36af',
+            expect(json[0].address).to.be.eql({
+              id: '54735722e16620ba1eee36af',
+            });
+
+            expect(json[1]).to.have.key('id', 'first-name', 'last-name',
+              'address');
+
+            expect(json[1].address).to.be.eql({
+              id: '54735697e16624ba1eee36bf',
+            });
+
+            done(null, json);
           });
-
-          expect(json[1]).to.have.key('id', 'first-name', 'last-name',
-            'address');
-
-          expect(json[1].address).to.be.eql({
-            id: '54735697e16624ba1eee36bf',
-          });
-
-          done(null, json);
-        });
       });
     });
 
-    describe('With empty relationship', function () {
-      it('should include the relationship as null (one-to)', function (done) {
+    describe('With empty relationship', function() {
+      it('should include the relationship as null (one-to)', function(done) {
         var dataSet = {
           data: {
             type: 'users',
@@ -1149,7 +1149,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).eql({
               id: '54735750e16638ba1eee59cb',
               'first-name': 'Sandro',
@@ -1160,7 +1160,7 @@ describe('JSON API Deserializer', function () {
           });
       });
 
-      it('should include the relationship as empty array (to-many)', function (done) {
+      it('should include the relationship as empty array (to-many)', function(done) {
         var dataSet = {
           data: {
             type: 'users',
@@ -1176,7 +1176,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).eql({
               id: '54735750e16638ba1eee59cb',
               'first-name': 'Sandro',
@@ -1188,8 +1188,8 @@ describe('JSON API Deserializer', function () {
       });
     });
 
-    describe('With null included nested relationship', function () {
-      it('should ignore the nested relationship', function (done) {
+    describe('With null included nested relationship', function() {
+      it('should ignore the nested relationship', function(done) {
         var dataSet = {
           data: {
             type: 'users',
@@ -1226,7 +1226,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).eql({
               id: '54735750e16638ba1eee59cb',
               'first-name': 'Sandro',
@@ -1253,7 +1253,7 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-          .deserialize(dataSet, function (err, json) {
+          .deserialize(dataSet, function(err, json) {
             expect(json).eql({
               id: '54735750e16638ba1eee59cb'
             });
@@ -1262,8 +1262,8 @@ describe('JSON API Deserializer', function () {
       });
     });
 
-    describe('without ID', function () {
-      it('ID should not be returned', function (done) {
+    describe('without ID', function() {
+      it('ID should not be returned', function(done) {
         var dataSet = {
           data: {
             type: 'users',
@@ -1272,19 +1272,19 @@ describe('JSON API Deserializer', function () {
         };
 
         new JSONAPIDeserializer()
-        .deserialize(dataSet, function (err, json) {
-          expect(json).to.be.eql({
-            'first-name': 'Sandro',
-            'last-name': 'Munda'
-          });
+          .deserialize(dataSet, function(err, json) {
+            expect(json).to.be.eql({
+              'first-name': 'Sandro',
+              'last-name': 'Munda'
+            });
 
-          done(null, json);
-        });
+            done(null, json);
+          });
       });
     });
 
-    describe('when mixed collection with option to include type as attributes', function () {
-      it('should include type as key', function (done) {
+    describe('when mixed collection with option to include type as attributes', function() {
+      it('should include type as key', function(done) {
         var dataSet = {
           data: [{
             type: 'users',
@@ -1319,40 +1319,40 @@ describe('JSON API Deserializer', function () {
           }]
         };
 
-        new JSONAPIDeserializer({typeAsAttribute: true})
-        .deserialize(dataSet, function (err, json) {
-          expect(json).to.be.an('array').with.length(2);
+        new JSONAPIDeserializer({ typeAsAttribute: true })
+          .deserialize(dataSet, function(err, json) {
+            expect(json).to.be.an('array').with.length(2);
 
-          expect(json[0]).to.have.key('id', 'first-name', 'last-name',
-            'address', 'type');
+            expect(json[0]).to.have.key('id', 'first-name', 'last-name',
+              'address', 'type');
 
-          expect(json[0].address).to.be.eql({
-            id: '54735722e16620ba1eee36af',
-            'address-line1': '406 Madison Court',
-            'zip-code': '49426',
-            country: 'USA',
-            type: 'addresses'
+            expect(json[0].address).to.be.eql({
+              id: '54735722e16620ba1eee36af',
+              'address-line1': '406 Madison Court',
+              'zip-code': '49426',
+              country: 'USA',
+              type: 'addresses'
+            });
+
+            expect(json[1]).to.have.key('id', 'name',
+              'address-line1', 'zip-code', 'country', 'type');
+            expect(json[1]).to.be.eql({
+              name: 'Shady Location',
+              'address-line1': '361 Shady Lane',
+              'zip-code': '23185',
+              country: 'USA',
+              id: '5490143e69e49d0c8f9fc6bc',
+              type: 'locations'
+            });
+
+            done(null, json);
           });
-
-          expect(json[1]).to.have.key('id', 'name',
-            'address-line1', 'zip-code', 'country', 'type');
-          expect(json[1]).to.be.eql({
-            name: 'Shady Location',
-            'address-line1': '361 Shady Lane',
-            'zip-code': '23185',
-            country: 'USA',
-            id: '5490143e69e49d0c8f9fc6bc',
-            type: 'locations'
-          });
-
-          done(null, json);
-        });
 
       });
     });
 
-    describe('With multiple relations', function () {
-      it('should include both relations if they point to same include', function (done) {
+    describe('With multiple relations', function() {
+      it('should include both relations if they point to same include', function(done) {
         var dataSet = {
           data: {
             type: 'posts',
@@ -1396,8 +1396,8 @@ describe('JSON API Deserializer', function () {
     });
   });
 
-  describe('without callback', function () {
-    it('should return promise', function (done) {
+  describe('without callback', function() {
+    it('should return promise', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -1411,26 +1411,26 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer()
-          .deserialize(dataSet).then(function (json) {
-            expect(json).to.be.an('array').with.length(2);
-            expect(json[0]).to.be.eql({
-              id: '54735750e16638ba1eee59cb',
-              'first-name': 'Sandro',
-              'last-name': 'Munda'
-            });
-            expect(json[1]).to.be.eql({
-              id: '5490143e69e49d0c8f9fc6bc',
-              'first-name': 'Lawrence',
-              'last-name': 'Bennett'
-            });
-
-            done(null, json);
+        .deserialize(dataSet).then(function(json) {
+          expect(json).to.be.an('array').with.length(2);
+          expect(json[0]).to.be.eql({
+            id: '54735750e16638ba1eee59cb',
+            'first-name': 'Sandro',
+            'last-name': 'Munda'
           });
+          expect(json[1]).to.be.eql({
+            id: '5490143e69e49d0c8f9fc6bc',
+            'first-name': 'Lawrence',
+            'last-name': 'Bennett'
+          });
+
+          done(null, json);
+        });
     });
   });
 
-  describe('Circular references', function () {
-    it('should not create an infinite loop', function (done) {
+  describe('Circular references', function() {
+    it('should not create an infinite loop', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -1471,31 +1471,31 @@ describe('JSON API Deserializer', function () {
         }]
       };
 
-      new JSONAPIDeserializer({keyForAttribute: 'snake_case'})
-          .deserialize(dataSet).then(function (json) {
-            expect(json).to.be.an('array').with.length(1);
-            expect(json[0]).to.have.key('id', 'first_name', 'last_name', 'address');
-            expect(json[0].address).to.be.eql({
-              address_line1: '406 Madison Court',
-              zip_code: '49426',
-              id: '54735722e16620ba1eee36af',
-              country: {
-                country: 'USA',
-                id: '54735722e16609ba1eee36af',
-                address: {
-                  address_line1: '406 Madison Court',
-                  zip_code: '49426',
-                  id: '54735722e16620ba1eee36af',
-                }
+      new JSONAPIDeserializer({ keyForAttribute: 'snake_case' })
+        .deserialize(dataSet).then(function(json) {
+          expect(json).to.be.an('array').with.length(1);
+          expect(json[0]).to.have.key('id', 'first_name', 'last_name', 'address');
+          expect(json[0].address).to.be.eql({
+            address_line1: '406 Madison Court',
+            zip_code: '49426',
+            id: '54735722e16620ba1eee36af',
+            country: {
+              country: 'USA',
+              id: '54735722e16609ba1eee36af',
+              address: {
+                address_line1: '406 Madison Court',
+                zip_code: '49426',
+                id: '54735722e16620ba1eee36af',
               }
-            });
-            done(null, json);
+            }
           });
+          done(null, json);
+        });
     });
   });
 
-  describe('transform', function () {
-    it('should transform record before deserialization', function (done) {
+  describe('transform', function() {
+    it('should transform record before deserialization', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -1509,14 +1509,14 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer({
-          transform: function (record) {
-            record['full-name'] = record['first-name'] + ' ' + record['last-name'];
-            delete record['first-name'];
-            delete record['last-name'];
-            return record;
-          }
-        })
-        .deserialize(dataSet, function (err, json) {
+        transform: function(record) {
+          record['full-name'] = record['first-name'] + ' ' + record['last-name'];
+          delete record['first-name'];
+          delete record['last-name'];
+          return record;
+        }
+      })
+        .deserialize(dataSet, function(err, json) {
           expect(json).to.be.an('array').with.length(2);
           expect(json[0]).to.be.eql({
             id: '54735750e16638ba1eee59cb',
@@ -1532,8 +1532,8 @@ describe('JSON API Deserializer', function () {
     });
   });
 
-  describe('meta', function () {
-    it('should be included', function (done) {
+  describe('meta', function() {
+    it('should be included', function(done) {
       var dataSet = {
         data: {
           type: 'users',
@@ -1545,49 +1545,49 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer()
-      .deserialize(dataSet, function (err, json) {
-        expect(json).to.be.eql({
-          'first-name': 'Sandro',
-          'last-name': 'Munda',
-          'meta': {
-            'some': 'attribute'
-          }
-        });
+        .deserialize(dataSet, function(err, json) {
+          expect(json).to.be.eql({
+            'first-name': 'Sandro',
+            'last-name': 'Munda',
+            'meta': {
+              'some': 'attribute'
+            }
+          });
 
-        done(null, json);
-      });
+          done(null, json);
+        });
     });
 
-     it('should be in camelCase', function (done) {
-       var dataSet = {
-         data: {
-           type: 'users',
-           attributes: { 'first-name': 'Sandro', 'last-name': 'Munda' },
-           meta: {
-             'some-attr': 'value'
-           }
-         }
-       };
+    it('should be in camelCase', function(done) {
+      var dataSet = {
+        data: {
+          type: 'users',
+          attributes: { 'first-name': 'Sandro', 'last-name': 'Munda' },
+          meta: {
+            'some-attr': 'value'
+          }
+        }
+      };
 
-       new JSONAPIDeserializer({
-         keyForAttribute: 'camelCase'
-       })
-       .deserialize(dataSet, function (err, json) {
-         expect(json).to.be.eql({
-           'firstName': 'Sandro',
-           'lastName': 'Munda',
-           'meta': {
-             'someAttr': 'value'
-           }
-         });
+      new JSONAPIDeserializer({
+        keyForAttribute: 'camelCase'
+      })
+        .deserialize(dataSet, function(err, json) {
+          expect(json).to.be.eql({
+            'firstName': 'Sandro',
+            'lastName': 'Munda',
+            'meta': {
+              'someAttr': 'value'
+            }
+          });
 
-         done(null, json);
-       });
-     });
+          done(null, json);
+        });
+    });
   });
 
-  describe('links', function () {
-    it('should be included', function (done) {
+  describe('links', function() {
+    it('should be included', function(done) {
       var dataSet = {
         data: {
           type: 'users',
@@ -1600,20 +1600,41 @@ describe('JSON API Deserializer', function () {
       };
 
       new JSONAPIDeserializer()
-      .deserialize(dataSet, function (err, json) {
-        expect(json).to.have.key('first-name', 'last-name', 'links');
-        expect(json.links).to.be.eql({
+        .deserialize(dataSet, function(err, json) {
+          expect(json).to.have.key('first-name', 'last-name', 'links');
+          expect(json.links).to.be.eql({
+            self: '/articles/1/relationships/tags',
+            related: '/articles/1/tags'
+          });
+
+          done(null, json);
+        });
+    });
+
+    it('should not be included if links option is disabled', function(done) {
+      var dataSet = {
+        data: {
+          type: 'users',
+          attributes: { 'first-name': 'Sandro', 'last-name': 'Munda' },
+        },
+        links: {
           self: '/articles/1/relationships/tags',
           related: '/articles/1/tags'
-        });
+        }
+      };
 
-        done(null, json);
-      });
+      new JSONAPIDeserializer({ links: false })
+        .deserialize(dataSet, function(err, json) {
+          expect(json).to.have.key('first-name', 'last-name');
+          expect(json.links).to.be.undefined;
+
+          done(null, json);
+        });
     });
   });
 
-  describe('id', function () {
-    it('should override the id field', function (done) {
+  describe('id', function() {
+    it('should override the id field', function(done) {
       var dataSet = {
         data: [{
           type: 'users',
@@ -1628,7 +1649,7 @@ describe('JSON API Deserializer', function () {
 
       new JSONAPIDeserializer({
         id: '_id'
-      }).deserialize(dataSet, function (err, json) {
+      }).deserialize(dataSet, function(err, json) {
         expect(json[0]).to.not.have.keys('id');
         expect(json[1]).to.not.have.keys('id');
         expect(json[0]._id).equal('54735750e16638ba1eee59cb');
